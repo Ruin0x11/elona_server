@@ -8,13 +8,9 @@ create table chat (
   id integer primary key autoincrement,
   time int not null,     -- UNIX timestamp to be converted to [M/DD(HH)]
   kind tinyint not null, -- one of "chat" (0), "dead" (1) or "wish" (2)
-  name text not null,    -- name of player
-  descr text not null,   -- description of message
-  text text not null,    -- player-provided text of message
+  text text not null,    -- text of message
   addr text not null     -- IP address/website of player
 );
-
-create index chat_idx on chat(name,time);
 
 -- vote(en).txt format:
 -- 1<>十字の蛇scar<>53<>114.157.208.48<>1449840576#625#66#<>
@@ -26,8 +22,9 @@ create table vote (
   votes integer not null,      -- number of votes
   addr text not null,          -- IP address of user
   time integer not null,       -- UNIX timestamp of last vote reset?
-  totalvotes integer not null, -- total votes across all resets?
-  rank integer not null        -- overall rank of registrant
+  totalvotes integer not null -- total votes across all resets?
 );
+
+create index vote_idx on vote(name,votes,totalvotes);
 
 commit;
