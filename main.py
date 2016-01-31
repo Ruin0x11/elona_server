@@ -83,7 +83,7 @@ def get_log():
         date = datetime.fromtimestamp(line['time']).strftime("%m/%d(%I)")
         response += str(line['id']) + '%' + date + '%' + chat_type_from_num(line['kind']) + line['text'] + '%' + line['addr'] + '%\n'
     response += "<!--END-->\n<!-- WebTalk v1.6 --><center><small><a href='http://www.kent-web.com/' target='_top'>WebTalk</a></small></center>"
-    return Response(response, mimetype='text/plain')
+    return Response(str.encode(response, "shift-jis"), mimetype='text/plain')
     
 
 @app.route("/vote.txt", methods=["GET"])
@@ -96,7 +96,7 @@ def get_vote():
         date = datetime.fromtimestamp(line['time']).strftime("%s")
         response += str(i) + '<>' + line['name'] + '<>' + str(line['votes']) + '<>' + line['addr'] + '<>' + date + '#' + str(line['totalvotes']) + '#' + '1' + '#<>\n'
         i += 1
-    return Response(response, mimetype='text/plain')
+    return Response(str.encode(response, "shift-jis"), mimetype='text/plain')
 
 
 @app.route("/cgi-bin/wtalk/wtalk2.cgi", methods=["GET"])
