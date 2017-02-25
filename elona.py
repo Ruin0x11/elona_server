@@ -108,15 +108,14 @@ def add_chat():
 
     mode = request.args.get('mode')
     comment = request.args.get('comment')
-    print(repr(comment.decode('shift-jis').encode('utf-8'), file=sys.stderr))
-    #chat_type = chat_type_from_string(commentstr[:5])
-    #text = commentstr[5:-11]
-    #time = int(datetime.now().strftime("%s"))
-    #addr = request.remote_addr
+    chat_type = chat_type_from_string(comment[:4])
+    text = comment[4:]
+    time = int(datetime.now().strftime("%s"))
+    addr = request.remote_addr
 
-    #db.execute('insert into chat (time, kind, text, addr) values (?, ?, ?, ?)',
-    #                [time, chat_type, text, addr])
-    #db.commit()
+    db.execute('insert into chat (time, kind, text, addr) values (?, ?, ?, ?)',
+                    [time, chat_type, text, addr])
+    db.commit()
     return get_log()
 
 @app.route("/cgi-bin/vote/votec.cgi", methods=["GET"])
