@@ -1,7 +1,7 @@
 # all the imports
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash, Response
+     abort, render_template, flash, Request, Response
 from contextlib import closing
 from datetime import datetime
 import codecs
@@ -15,6 +15,9 @@ PASSWORD = 'default'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+Request.charset = "shift-jis"
+Response.charset = "shift-jis"
 
 DATABASE = '/home/ruin0x11/elona.db'
 
@@ -70,7 +73,7 @@ def chat_type_from_string(x):
 @app.route("/text.txt", methods=["GET"])
 def text():
     response = "<!--START-->\n%\n素敵な異名コンテスト♪1  [１ヶ月で自動リセット]%\nYour favorite alias♪1  [Auto reset every month]%"
-    return Response(str.encode(response, "shift-jis"), mimetype='text/plain')
+    return Response(response, mimetype='text/plain')
 
 
 @app.route("/log.txt", methods=["GET"])
@@ -83,7 +86,7 @@ def get_log():
         date = datetime.fromtimestamp(line['time']).strftime("%m/%d(%I)")
         response += str(line['id']) + '%' + date + '%' + chat_type_from_num(line['kind']) + line['text'] + '%' + line['addr'] + '%\n'
     response += "<!--END-->\n<!-- WebTalk v1.6 --><center><small><a href='http://www.kent-web.com/' target='_top'>WebTalk</a></small></center>"
-    return Response(str.encode(response, "shift-jis"), mimetype='text/plain')
+    return Response(response, mimetype='text/plain')
     
 
 @app.route("/vote.txt", methods=["GET"])
