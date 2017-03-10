@@ -4,7 +4,6 @@ from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash, Request, Response
 from contextlib import closing
 from datetime import datetime
-import codecs
 
 # configuration
 DATABASE = '/tmp/flaskr.db'
@@ -124,17 +123,15 @@ def add_vote():
 
     no = request.args.get('no')
     mode = request.args.get('mode')
-    vote = codecs.decode(request.args.get('vote'), 'unicode_escape')
-    #votestr = str.encode(vote, "latin-1").decode("shift-jis")[:-11]
-    votestr = vote
+    vote = request.args.get('vote')
     addr = request.remote_addr
     time = int(datetime.now().strftime("%s"))
     if mode == 'wri':
-        first = query_db('select * from vote where name = ?', [votestr], one=True)
+        first = query_db('select * from vote where name = ?', [vote], one=True)
         if first:
             return get_vote()
         db.execute('insert into vote (name, votes, addr, time, totalvotes) values (?, ?, ?, ?, ?)',
-                        [votestr, 0, addr, time, 0])
+                        [vote, 0, addr, time, 0])
         db.commit()
     return get_vote()
 
