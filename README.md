@@ -1,5 +1,5 @@
 # elona_server
-Replacement chat server for [Elona](http://homepage3.nifty.com/rfish/index_e.html) and [Elona+](http://wikiwiki.jp/elonaplus/?FrontPage).
+Replacement chat server for [Elona](http://ylvania.org/en/elona) and [Elona+](http://wikiwiki.jp/elonaplus/?FrontPage).
 
 The list of servers is hardcoded, so an official update/patch to decompiled HSP would have to be made.
 
