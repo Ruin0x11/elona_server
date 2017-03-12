@@ -1,10 +1,9 @@
 # all the imports
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash, Response
+     abort, render_template, flash, Request, Response
 from contextlib import closing
 from datetime import datetime
-import codecs
 
 # configuration
 DATABASE = '/tmp/flaskr.db'
@@ -15,6 +14,9 @@ PASSWORD = 'default'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+Request.charset = "shift-jis"
+Response.charset = "shift-jis"
 
 DATABASE = '/home/ruin0x11/elona.db'
 
@@ -70,7 +72,7 @@ def chat_type_from_string(x):
 @app.route("/text.txt", methods=["GET"])
 def text():
     response = "<!--START-->\n%\n素敵な異名コンテスト♪1  [１ヶ月で自動リセット]%\nYour favorite alias♪1  [Auto reset every month]%"
-    return Response(str.encode(response, "shift-jis"), mimetype='text/plain')
+    return Response(response, mimetype='text/plain')
 
 
 @app.route("/log.txt", methods=["GET"])
@@ -83,7 +85,7 @@ def get_log():
         date = datetime.fromtimestamp(line['time']).strftime("%m/%d(%I)")
         response += str(line['id']) + '%' + date + '%' + chat_type_from_num(line['kind']) + line['text'] + '%' + line['addr'] + '%\n'
     response += "<!--END-->\n<!-- WebTalk v1.6 --><center><small><a href='http://www.kent-web.com/' target='_top'>WebTalk</a></small></center>"
-    return Response(str.encode(response, "shift-jis"), mimetype='text/plain')
+    return Response(response, mimetype='text/plain')
     
 
 @app.route("/vote.txt", methods=["GET"])
@@ -105,15 +107,14 @@ def add_chat():
 
     mode = request.args.get('mode')
     comment = request.args.get('comment')
-    print(repr(comment.decode('shift-jis').encode('utf-8'), file=sys.stderr))
-    #chat_type = chat_type_from_string(commentstr[:5])
-    #text = commentstr[5:-11]
-    #time = int(datetime.now().strftime("%s"))
-    #addr = request.remote_addr
+    chat_type = chat_type_from_string(comment[:4])
+    text = comment[4:]
+    time = int(datetime.now().strftime("%s"))
+    addr = request.remote_addr
 
-    #db.execute('insert into chat (time, kind, text, addr) values (?, ?, ?, ?)',
-    #                [time, chat_type, text, addr])
-    #db.commit()
+    db.execute('insert into chat (time, kind, text, addr) values (?, ?, ?, ?)',
+                    [time, chat_type, text, addr])
+    db.commit()
     return get_log()
 
 @app.route("/cgi-bin/vote/votec.cgi", methods=["GET"])
@@ -122,17 +123,15 @@ def add_vote():
 
     no = request.args.get('no')
     mode = request.args.get('mode')
-    vote = codecs.decode(request.args.get('vote'), 'unicode_escape')
-    #votestr = str.encode(vote, "latin-1").decode("shift-jis")[:-11]
-    votestr = vote
+    vote = request.args.get('vote')
     addr = request.remote_addr
     time = int(datetime.now().strftime("%s"))
     if mode == 'wri':
-        first = query_db('select * from vote where name = ?', [votestr], one=True)
+        first = query_db('select * from vote where name = ?', [vote], one=True)
         if first:
             return get_vote()
         db.execute('insert into vote (name, votes, addr, time, totalvotes) values (?, ?, ?, ?, ?)',
-                        [votestr, 0, addr, time, 0])
+                        [vote, 0, addr, time, 0])
         db.commit()
     return get_vote()
 
