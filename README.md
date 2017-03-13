@@ -1,6 +1,11 @@
 # elona_server
-Replacement chat server for [Elona](http://homepage3.nifty.com/rfish/index_e.html) and [Elona+](http://wikiwiki.jp/elonaplus/?FrontPage).
+Replacement chat server for [Elona](http://ylvania.org/en/elona) and [Elona+](http://wikiwiki.jp/elonaplus/?FrontPage).
 
-The list of servers is hardcoded, so an official update/patch to decompiled HSP would have to be made.
+If the `serverList` option in the "config.txt" file is set to `1` or the game is started with no Internet connection, the servers listed in the "server.txt" file in the game directory will be used.
 
-If the game is started with no Internet connection, the servers listed in the "servers.txt" file in the game directory will be used. This is the only real way to test the server for now.
+Format of the "server.txt" file:
+
+    chat.server.hostname%voting.server.hostname%
+
+Note that the game prepends `www.` to both hostnames before resolving them.
+The moongate server hostname is hardcoded, so an official update/patch to decompiled HSP would have to be made.
