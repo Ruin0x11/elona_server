@@ -96,7 +96,7 @@ def get_vote():
     no = first['id']+1 if first else 1
     for line in query_db('select * from vote limit 100'):
         date = datetime.fromtimestamp(line['time']).strftime("%s")
-        response += str(i) + '<>' + line['name'] + '<>' + str(line['votes']) + '<>' + line['addr'] + '<>' + date + '#' + str(line['totalvotes']) + '#' + '1' + '#<>\n'
+        response += str(line['id']) + '<>' + line['name'] + '<>' + str(line['votes']) + '<>' + line['addr'] + '<>' + date + '#' + str(line['totalvotes']) + '#' + '1' + '#<>\n'
         i += 1
     return Response(response, mimetype='text/plain')
 
@@ -121,17 +121,26 @@ def add_chat():
 def add_vote():
     db = get_db()
 
-    no = request.args.get('no')
+    namber = request.args.get('namber')
     mode = request.args.get('mode')
-    vote = request.args.get('vote')
+    name = request.args.get('vote')
     addr = request.remote_addr
     time = int(datetime.now().strftime("%s"))
-    if mode == 'wri':
-        first = query_db('select * from vote where name = ?', [vote], one=True)
+    if mode != 'wri':
+        return Response(status=400)
+    if name:
+        first = query_db('select * from vote where name = ?', [name], one=True)
         if first:
             return get_vote()
         db.execute('insert into vote (name, votes, addr, time, totalvotes) values (?, ?, ?, ?, ?)',
-                        [vote, 0, addr, time, 0])
+                        [name, 0, addr, time, 0])
+        db.commit()
+    elif namber:
+        vote = query_db('select * from vote where id = ?', [namber], one=True)
+        if not vote:
+            return Response(status=400)
+        db.execute('update vote set votes = ?, totalvotes = ? where id = ?',
+                        [vote['votes'] + 1, vote['totalvotes'] + 1, namber])
         db.commit()
     return get_vote()
 

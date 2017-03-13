@@ -18,13 +18,14 @@ create table chat (
 
 drop table if exists vote;
 create table vote (
-  name text primary key,       -- name of registrant
+  id integer primary key autoincrement,
+  name text not null,          -- name of registrant
   votes integer not null,      -- number of votes
   addr text not null,          -- IP address of user
   time integer not null,       -- UNIX timestamp of last vote reset?
   totalvotes integer not null -- total votes across all resets?
 );
 
-create index vote_idx on vote(name,votes,totalvotes);
+create index vote_idx on vote(id,name,votes,totalvotes);
 
 commit;
