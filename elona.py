@@ -135,7 +135,7 @@ def add_vote():
         db.commit()
     elif namber:
         vote = query_db('select * from vote where id = ?', [namber], one=True)
-        if not vote:
+        if not vote or vote['addr'] == request.remote_addr:
             return Response(status=400)
         db.execute('update vote set votes = ?, totalvotes = ? where id = ?',
                         [vote['votes'] + 1, vote['totalvotes'] + 1, namber])
