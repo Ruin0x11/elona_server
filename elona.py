@@ -91,13 +91,9 @@ def get_log():
 @app.route("/vote.txt", methods=["GET"])
 def get_vote():
     response = ""
-    first = query_db('select * from chat order by id desc limit 1', one=True)
-    i = 1
-    no = first['id']+1 if first else 1
     for line in query_db('select * from vote limit 100'):
         date = datetime.fromtimestamp(line['time']).strftime("%s")
         response += str(line['id']) + '<>' + line['name'] + '<>' + str(line['votes']) + '<>' + line['addr'] + '<>' + date + '#' + str(line['totalvotes']) + '#' + '1' + '#<>\n'
-        i += 1
     return Response(response, mimetype='text/plain')
 
 
@@ -126,8 +122,10 @@ def add_vote():
     name = request.args.get('vote')
     addr = request.remote_addr
     time = int(datetime.now().strftime("%s"))
+
     if mode != 'wri':
         return Response(status=501)
+
     if name:
         first = query_db('select * from vote where name = ?', [name], one=True)
         if first:
@@ -142,6 +140,7 @@ def add_vote():
         db.execute('update vote set votes = ?, totalvotes = ? where id = ?',
                         [vote['votes'] + 1, vote['totalvotes'] + 1, namber])
         db.commit()
+
     return get_vote()
 
 if __name__ == "__main__":
