@@ -127,7 +127,7 @@ def add_vote():
     addr = request.remote_addr
     time = int(datetime.now().strftime("%s"))
     if mode != 'wri':
-        return Response(status=400)
+        return Response(status=501)
     if name:
         first = query_db('select * from vote where name = ?', [name], one=True)
         if first:
